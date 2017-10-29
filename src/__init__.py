@@ -1,5 +1,5 @@
 from . import project
 
-from abstractpsf import AbstractPointSpreadFunction
+from abstractpf import AbstractPupilFunction
 
 __all__ = ('project')
