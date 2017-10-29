@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from scipy.fftpack import fft2
+from scipy.fftpack import fftshift
 import sys
 
 PI     = np.pi
@@ -21,6 +23,10 @@ class AbstractPupilFunction(object):
         self.samples  = 100                                          # Number of sample points per dimension
         self.spectrum = TWO_PI / np.linspace(400, 700, self.samples) # k-space of visual spectrum -- units of nm^(-1) !
 
+        # Shortcuts to useful variables
+        self.R       = self.diameter / 2.
+        self.nyqfreq = self.samples / (4. * self.diameter) # 1 / (2 * (2D / N))
+
         # Reset private variables in object
         self._clear()
 
@@ -28,7 +34,6 @@ class AbstractPupilFunction(object):
         self.applySettings(opts)
 
     def _clear(self):
-        self._pupilRender = None
         self._X           = None
         self._Y           = None
 
@@ -55,13 +60,16 @@ class AbstractPupilFunction(object):
 
     def configurationMesh(self):
         '''
-        For FFT padding, the image is defined from [-D, D] on both x & y domains
+        For FFT padding, the image is defined from [0, 2D] on both x & y domains
+
+        Also, keep in mind the Nyquist freq 1 / 2*T where T is the spacing
+        Since 2D = N*T, T = 2D / N
         '''
         if self._X is None  or self._Y is None:
-            x = np.linspace(-self.diameter, self.diameter, self.samples)
-            y = np.linspace(-self.diameter, self.diameter, self.samples)
+            x = np.linspace(0, 2.*self.diameter, self.samples)
+            y = np.linspace(0, 2.*self.diameter, self.samples)
 
-            X, Y = np.mgrid(x, y, indexing='xy') # Note: this behaves like X[j, i]
+            X, Y = np.meshgrid(x, y, indexing='xy') # Note: this behaves like X[j, i]
 
             # Store mesh for later use
             self._X = X
@@ -69,32 +77,20 @@ class AbstractPupilFunction(object):
 
         return self._X, self._Y
 
-    def render(self, force=False):
+    def render(self, k):
         '''
         Render the pupil function for the provided spectrum and diameter
         '''
-        if self._pupilRender is None or force:
-            r   = np.linspace(0, self.diameter / 2., self.samples)
-            phi = np.linspace(0, TWO_PI, self.samples)
+        X, Y = self.configurationMesh()
 
-            # Define a grid on the optics
-            rv, phiv = np.meshgrid(r, phi)
+        return self.pFunc(X,Y) * np.exp(-k*1j * self.wFunc(X, Y))
 
-            P = self.pFunc(rv, phiv)
-            W = self.wFunc(rv, phiv)
-
-            exponent = -1j * W.dot(self.spectrum)
-
-            rend = P.dot(np.exp(exponent))
-            self._pupilRender = rend
-
-        return self._pupilRender
-
-    def transform(self):
+    def psf(self, k):
         '''
-        FFT the pupil function, given its parameters, and produce an image
+        FFT the pupil function, given its parameters, and produce the PSF
         '''
-        raise Exception('Not implemented yet')
+
+        return np.abs(fftshift(fft2(self.render(k))))**2.
 
     def pFunc(self, r, phi):
         '''

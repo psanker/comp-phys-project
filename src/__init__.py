@@ -1,5 +1,6 @@
 from . import project
 
-from abstractpf import AbstractPupilFunction
+from . import abstractpf
+from . import simplepf
 
-__all__ = ('project')
+__all__ = ('abstractpf', 'simplepf')
