@@ -23,10 +23,6 @@ class AbstractPupilFunction(object):
         self.samples  = 100                                          # Number of sample points per dimension
         self.spectrum = TWO_PI / np.linspace(400, 700, self.samples) # k-space of visual spectrum -- units of nm^(-1) !
 
-        # Shortcuts to useful variables
-        self.R       = self.diameter / 2.
-        self.nyqfreq = self.samples / (4. * self.diameter) # 1 / (2 * (2D / N))
-
         # Reset private variables in object
         self._clear()
 
@@ -77,6 +73,14 @@ class AbstractPupilFunction(object):
 
         return self._X, self._Y
 
+    def radius(self):
+        # Shortcut function to the radius
+        return self.diameter / 2.
+
+    def nyqfreq(self):
+        # Shortcut to the Nyquist frequency
+        return self.samples / (2. * self.diameter) # 1 / (2 * (2D / N))
+
     def render(self, k):
         '''
         Render the pupil function for the provided spectrum and diameter
@@ -90,16 +94,18 @@ class AbstractPupilFunction(object):
         FFT the pupil function, given its parameters, and produce the PSF
         '''
 
-        return np.abs(fftshift(fft2(self.render(k))))**2.
+        shift = fftshift(fft2(self.render(k)))
 
-    def pFunc(self, r, phi):
+        return np.abs(np.log(1. + shift))**2.
+
+    def pFunc(self, x, y):
         '''
-        The P(r, φ) function for the PSF
+        The P(x, y) function for the PSF
         '''
         raise Exception('Not implemented yet')
 
-    def wFunc(self, r, phi):
+    def wFunc(self, x, y):
         '''
-        The W(r, φ) function to simulate mirror imperfections
+        The W(x, y) function to simulate mirror imperfections
         '''
         raise Exception('Not implemented yet')

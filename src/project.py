@@ -12,6 +12,15 @@ pupil = SimplePupilFunction(diameter=20)
 PI     = np.pi
 TWO_PI = 2.*PI
 
+def terminate():
+    pupil = None
+
+def get_simplepsf():
+    red = TWO_PI / 500e-7
+
+    psf = pupil.psf(red)
+    return np.where(psf < 1e-15, 0, psf)
+
 def plot_simplepupil():
     red = TWO_PI / 500e-7
     X, Y = pupil.configurationMesh()
@@ -23,15 +32,15 @@ def plot_simplepupil():
 def plot_simplepsf():
     red = TWO_PI / 500e-7
 
-    kx = np.linspace(0, pupil.nyqfreq, pupil.samples)
-    ky = np.linspace(0, pupil.nyqfreq, pupil.samples)
+    kx = np.linspace(0, pupil.nyqfreq(), pupil.samples)
+    ky = np.linspace(0, pupil.nyqfreq(), pupil.samples)
 
     KX, KY = np.meshgrid(kx, ky, indexing='xy')
 
     psf = pupil.psf(red)
 
     fig, ax = plt.subplots()
-    ax.contourf(KX, KY, psf, levels=np.linspace(0, np.amax(psf), 100))
+    ax.contourf(KX, KY, np.where(psf < 1e-15, 0, psf), levels=np.linspace(0, np.amax(psf), 100))
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$')
     ax.set_ylabel('$k_y$')
