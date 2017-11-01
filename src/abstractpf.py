@@ -30,8 +30,9 @@ class AbstractPupilFunction(object):
         self.applySettings(opts)
 
     def _clear(self):
-        self._X           = None
-        self._Y           = None
+        self.opts = {}
+        self._X   = None
+        self._Y   = None
 
     def applySettings(self, vals):
         '''
@@ -51,8 +52,8 @@ class AbstractPupilFunction(object):
             self.diameter = v
         elif k == 'samples':
             self.samples = v
-        elif k == 'spectrum':
-            self.k = v
+        else:
+            self.opts[k] = v
 
     def configurationMesh(self):
         '''
