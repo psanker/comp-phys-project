@@ -7,7 +7,7 @@ import numpy as np
 
 from .simplepf import SimplePupilFunction
 
-pupil = SimplePupilFunction(diameter=20)
+pupil = SimplePupilFunction(diameter=5, samples=500)
 
 PI     = np.pi
 TWO_PI = 2.*PI
@@ -40,7 +40,7 @@ def plot_simplepsf():
     psf = pupil.psf(red)
 
     fig, ax = plt.subplots()
-    ax.contourf(KX, KY, np.where(psf < 1e-15, 0, psf), levels=np.linspace(0, np.amax(psf), 100))
+    ax.contourf(KX, KY, np.where(psf < 1e-15, 0, psf), levels=np.linspace(0, np.amax(psf), 20))
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$')
     ax.set_ylabel('$k_y$')

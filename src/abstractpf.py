@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.fftpack import fft2
 from scipy.fftpack import fftshift
+from scipy.fftpack import ifft
 import sys
 
 PI     = np.pi
@@ -79,7 +80,7 @@ class AbstractPupilFunction(object):
 
     def nyqfreq(self):
         # Shortcut to the Nyquist frequency
-        return self.samples / (2. * self.diameter) # 1 / (2 * (2D / N))
+        return 1. / (2. * self.diameter) # 1 / (2 * (2D / N))
 
     def render(self, k):
         '''
@@ -96,7 +97,7 @@ class AbstractPupilFunction(object):
 
         shift = fftshift(fft2(self.render(k)))
 
-        return np.abs(np.log(1. + shift))**2.
+        return np.log(1+np.abs(shift)**2)
 
     def pFunc(self, x, y):
         '''
