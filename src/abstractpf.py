@@ -3,7 +3,6 @@
 import numpy as np
 from scipy.fftpack import fft2
 from scipy.fftpack import fftshift
-from scipy.fftpack import ifft
 import sys
 
 PI     = np.pi
@@ -20,8 +19,8 @@ class AbstractPupilFunction(object):
     def __init__(self, **opts):
 
         # Assign defaults for all children
-        self.diameter = 2.                                           # Diameter of optics
-        self.samples  = 100                                          # Number of sample points per dimension
+        self.diameter = 2.          # Diameter of optics
+        self.samples  = 100         # Number of sample points per dimension
         self.spectrum = TWO_PI / np.linspace(400, 700, self.samples) # k-space of visual spectrum -- units of nm^(-1) !
 
         # Reset private variables in object
@@ -57,14 +56,14 @@ class AbstractPupilFunction(object):
 
     def configurationMesh(self):
         '''
-        For FFT padding, the image is defined from [0, 2D] on both x & y domains
+        For FFT padding, the image is defined from [-D, D] on both x & y domains
 
         Also, keep in mind the Nyquist freq 1 / 2*T where T is the spacing
         Since 2D = N*T, T = 2D / N
         '''
         if self._X is None  or self._Y is None:
-            x = np.linspace(0, 2.*self.diameter, self.samples)
-            y = np.linspace(0, 2.*self.diameter, self.samples)
+            x = np.linspace(-self.diameter, self.diameter, self.samples)
+            y = np.linspace(-self.diameter, self.diameter, self.samples)
 
             X, Y = np.meshgrid(x, y, indexing='xy') # Note: this behaves like X[j, i]
 
@@ -80,7 +79,7 @@ class AbstractPupilFunction(object):
 
     def nyqfreq(self):
         # Shortcut to the Nyquist frequency
-        return 1. / (2. * self.diameter) # 1 / (2 * (2D / N))
+        return self.samples / (2. * self.diameter) # 1 / (2 * (2D / N))
 
     def render(self, k):
         '''
@@ -95,9 +94,10 @@ class AbstractPupilFunction(object):
         FFT the pupil function, given its parameters, and produce the PSF
         '''
 
-        shift = fftshift(fft2(self.render(k)))
+        shift_test = fftshift(self.render(k))
+        shift = fftshift(fft2(shift_test))
 
-        return np.log(1+np.abs(shift)**2)
+        return np.abs(np.log10(1. + shift))**2.
 
     def pFunc(self, x, y):
         '''
