@@ -4,8 +4,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from scipy.fftpack import ifft2
-
 from .simplepf import SimplePupilFunction
 from .cassegrainpf import CassegrainPupilFunction
 
