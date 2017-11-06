@@ -19,8 +19,8 @@ class AbstractPupilFunction(object):
     def __init__(self, **opts):
 
         # Assign defaults for all children
-        self.diameter = 2.                                           # Diameter of optics
-        self.samples  = 100                                          # Number of sample points per dimension
+        self.diameter = 2.          # Diameter of optics
+        self.samples  = 100         # Number of sample points per dimension
         self.spectrum = TWO_PI / np.linspace(400, 700, self.samples) # k-space of visual spectrum -- units of nm^(-1) !
 
         # Reset private variables in object
