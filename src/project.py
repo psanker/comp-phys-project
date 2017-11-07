@@ -7,6 +7,7 @@ import numpy as np
 from .simplepf import SimplePupilFunction
 from .cassegrainpf import CassegrainPupilFunction
 from .squarepf import SquarePupilFunction
+from .gaussianrndf import GaussianRandomField
 
 # Globals
 PI     = np.pi
@@ -16,6 +17,8 @@ pupil  = SimplePupilFunction(diameter=50, samples=256)
 caspup = CassegrainPupilFunction(diameter=50, b=21, samples=256)
 square = SquarePupilFunction(diameter=50, samples=256)
 red    = TWO_PI / 500e-7
+Pk2 = lambda s : s**(-3.0)
+gauss = GaussianRandomField(pupil, Pk2)
 
 # Memory management
 def terminate():
@@ -100,3 +103,8 @@ def plot_squarepsf():
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$')
     ax.set_ylabel('$k_y$')
+
+def plot_gauss():
+    # check the random field is working
+    plt.figure()
+    plt.imshow(gauss.randomfield().real, interpolation='none')
