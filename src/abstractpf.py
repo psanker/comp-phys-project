@@ -55,16 +55,18 @@ class AbstractPupilFunction(object):
         else:
             self.opts[k] = v
 
-    def configurationMesh(self):
+    def configurationMesh(self, padding=1., force=False):
         '''
         For FFT padding, the image is defined from [-D, D] on both x & y domains
 
         Also, keep in mind the Nyquist freq 1 / 2*T where T is the spacing
         Since 2D = N*T, T = 2D / N
         '''
-        if self._X is None  or self._Y is None:
-            x = np.linspace(-self.diameter, self.diameter, self.samples)
-            y = np.linspace(-self.diameter, self.diameter, self.samples)
+        if force or (self._X is None  or self._Y is None):
+            scale = padding * self.diameter
+
+            x = np.linspace(-scale, scale, self.samples)
+            y = np.linspace(-scale, scale, self.samples)
 
             X, Y = np.meshgrid(x, y, indexing='xy') # Note: this behaves like X[j, i]
 
@@ -80,23 +82,23 @@ class AbstractPupilFunction(object):
 
     def nyqfreq(self):
         # Shortcut to the Nyquist frequency
-        return self.samples / (2. * self.diameter) # 1 / (2 * (2D / N))
+        return self.samples / (4. * self.diameter) # 1 / (2 * (2D / N))
 
-    def render(self, k):
+    def render(self, k, padding=1., force=False):
         '''
         Render the pupil function for the provided spectrum and diameter
         '''
-        X, Y = self.configurationMesh()
+        X, Y = self.configurationMesh(padding=padding, force=force)
 
         return self.pFunc(X,Y) * np.exp(-k*1j * self.wFunc(X, Y))
 
-    def psf(self, k):
+    def psf(self, k, padding=1., force=False):
         '''
         FFT the pupil function, given its parameters, and produce the PSF
         '''
 
-        shift_test = fftshift(self.render(k))
-        shift = fftshift(fft2(shift_test))
+        shift_test = self.render(k, padding=padding, force=force)
+        shift = fft2(shift_test)
 
         return np.abs(np.log10(1. + shift))**2.
 

@@ -12,7 +12,7 @@ class SimplePupilFunction(AbstractPupilFunction):
     '''
 
     def pFunc(self, x, y):
-        return np.where((x)**2 + (y)**2 > (self.radius())**2, 0., 1.)
+        return 1.*np.where((x)**2. + (y)**2. > (self.radius())**2, 0., 1.)
 
     def wFunc(self, r, phi):
         return np.zeros((self.samples, self.samples))
