@@ -3,6 +3,7 @@
 import numpy as np
 from scipy.fftpack import fft2
 from scipy.fftpack import fftshift
+from scipy.ndimage.filters import gaussian_filter
 import sys
 
 PI     = np.pi
@@ -21,6 +22,7 @@ class AbstractPupilFunction(object):
         # Assign defaults for all children
         self.diameter = 2.                                           # Diameter of optics
         self.samples  = 100                                          # Number of sample points per dimension
+        self.padscale = 1.                                           # Number of diameters to use as 0-padding
         self.spectrum = TWO_PI / np.linspace(400, 700, self.samples) # k-space of visual spectrum -- units of nm^(-1) !
 
         # Reset private variables in object
@@ -52,18 +54,20 @@ class AbstractPupilFunction(object):
             self.diameter = v
         elif k == 'samples':
             self.samples = v
+        elif k == 'padscale':
+            self.padscale = v
         else:
             self.opts[k] = v
 
-    def configurationMesh(self, padding=1., force=False):
+    def configurationMesh(self):
         '''
         For FFT padding, the image is defined from [-D, D] on both x & y domains
 
         Also, keep in mind the Nyquist freq 1 / 2*T where T is the spacing
         Since 2D = N*T, T = 2D / N
         '''
-        if force or (self._X is None  or self._Y is None):
-            scale = padding * self.diameter
+        if (self._X is None  or self._Y is None):
+            scale = self.padscale * self.diameter
 
             x = np.linspace(-scale, scale, self.samples)
             y = np.linspace(-scale, scale, self.samples)
@@ -84,21 +88,28 @@ class AbstractPupilFunction(object):
         # Shortcut to the Nyquist frequency
         return self.samples / (4. * self.diameter) # 1 / (2 * (2D / N))
 
-    def render(self, k, padding=1., force=False):
+    def render(self, k, filtering=False):
         '''
         Render the pupil function for the provided spectrum and diameter
         '''
-        X, Y = self.configurationMesh(padding=padding, force=force)
+        X, Y = self.configurationMesh()
 
-        return self.pFunc(X,Y) * np.exp(-k*1j * self.wFunc(X, Y))
+        img = self.pFunc(X, Y) * np.exp(-k*1j * self.wFunc(X, Y))
 
-    def psf(self, k, padding=1., force=False):
+        if not filtering:
+            return img
+        else:
+            # Use Gaussian filtering on image to smooth edges
+            filtered_re = gaussian_filter(img.real, 1.1, order=0)
+            filtered_im = gaussian_filter(img.imag, 1.1, order=0)
+            return filtered_re + 1j*filtered_im
+
+    def psf(self, k, filtering=False):
         '''
         FFT the pupil function, given its parameters, and produce the PSF
         '''
-
-        shift_test = self.render(k, padding=padding, force=force)
-        shift = fft2(shift_test)
+        shift_test = fftshift(self.render(k, filtering=filtering))
+        shift = fftshift(fft2(shift_test))
 
         return np.abs(np.log10(1. + shift))**2.
 

@@ -13,9 +13,9 @@ from .gaussianrndf import GaussianRandomField
 PI     = np.pi
 TWO_PI = 2.*PI
 
-pupil  = SimplePupilFunction(diameter=50, samples=256)
-caspup = CassegrainPupilFunction(diameter=50, b=21, samples=256)
-square = SquarePupilFunction(diameter=50, samples=256)
+pupil  = SimplePupilFunction(diameter=50, samples=256, padscale=1.2)
+caspup = CassegrainPupilFunction(diameter=50, b=20, samples=256, padscale=1.2)
+square = SquarePupilFunction(diameter=50, samples=256, padscale=1.2)
 red    = TWO_PI / 500e-7
 Pk2 = lambda s : s**(-3.0)
 gauss = GaussianRandomField(pupil, Pk2)
@@ -36,70 +36,55 @@ def plot_simplepupil():
     X, Y = pupil.configurationMesh()
 
     fig, ax = plt.subplots()
-    ax.contourf(X, Y, pupil.render(red))
+    ax.contourf(X, Y, pupil.render(red, filtering=True))
     ax.set_aspect('equal')
 
 def plot_cassepupil():
     X, Y = caspup.configurationMesh()
 
     fig, ax = plt.subplots()
-    ax.contourf(X, Y, caspup.render(red))
+    ax.contourf(X, Y, caspup.render(red, filtering=True))
     ax.set_aspect('equal')
 
 def plot_squarepupil():
     X, Y = square.configurationMesh()
 
     fig, ax = plt.subplots()
-    ax.contourf(X, Y, square.render(red))
+    ax.contourf(X, Y, square.render(red, filtering=True))
     ax.set_aspect('equal')
 
 def plot_simplepsf():
-    kx = np.linspace(-pupil.nyqfreq() / 2., pupil.nyqfreq() / 2., pupil.samples)
-    ky = np.linspace(-pupil.nyqfreq() / 2., pupil.nyqfreq() / 2., pupil.samples)
-
-    KX, KY = np.meshgrid(kx, ky, indexing='xy')
-
     # Filter and rescale properly
-    psf = pupil.psf(red, padding=1.6, force=True)
+    psf = pupil.psf(red, filtering=True)
     psf = psf / np.amax(psf)
     psf = np.where(psf > 1e-15, psf, 0.)
 
     fig, ax = plt.subplots()
-    ax.contourf(KX, KY, psf, levels=np.linspace(0, 1, 50), interpolation='nearest')
+    ax.imshow(psf, interpolation='bessel')
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$')
     ax.set_ylabel('$k_y$')
 
 def plot_cassepsf():
-    kx = np.linspace(-caspup.nyqfreq() / 2., caspup.nyqfreq() / 2., caspup.samples)
-    ky = np.linspace(-caspup.nyqfreq() / 2., caspup.nyqfreq() / 2., caspup.samples)
-
-    KX, KY = np.meshgrid(kx, ky, indexing='xy')
-
     # Filter and rescale properly
-    psf = caspup.psf(red)
+    psf = caspup.psf(red, filtering=True)
     psf = psf / np.amax(psf)
     psf = np.where(psf > 1e-15, psf, 0.)
 
     fig, ax = plt.subplots()
-    ax.contourf(KX, KY, psf, levels=np.linspace(0, 1, 50))
+    ax.imshow(psf, interpolation='bessel')
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$')
     ax.set_ylabel('$k_y$')
 
 def plot_squarepsf():
     # Filter and rescale properly
-    psf = square.psf(red, force=True, padding=2.)
+    psf = square.psf(red, filtering=True)
     psf = psf / np.amax(psf)
     psf = np.where(psf > 1e-15, psf, 0.)
 
-    kx = np.linspace(-square.nyqfreq() / 2., square.nyqfreq() / 2., square.samples)
-    ky = np.linspace(-square.nyqfreq() / 2., square.nyqfreq() / 2., square.samples)
-
-    KX, KY = np.meshgrid(kx, ky, indexing='xy')
-
     fig, ax = plt.subplots()
-    ax.contourf(KX, KY, psf, levels=np.linspace(0, 1, 50))
+    ax.imshow(psf)
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$')
     ax.set_ylabel('$k_y$')
