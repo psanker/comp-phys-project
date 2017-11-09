@@ -14,5 +14,5 @@ class CassegrainPupilFunction(AbstractPupilFunction):
         pass2 = np.where((x)**2 + (y)**2 > (self.opts['b']**2), pass1, 0.)
         return pass2
 
-    def wFunc(self, r, phi):
+    def wFunc(self, x, y):
         return np.zeros((self.samples, self.samples))

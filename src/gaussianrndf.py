@@ -21,16 +21,16 @@ class GaussianRandomField(object):
         # Pass in a power-squared expression
         self.Pk2 = Pk2
 
-        self.kx = np.arange(-self.samples/2, self.samples/2)
-        self.ky = np.arange(-self.samples/2, self.samples/2)
+        kx = np.arange(-self.samples/2, self.samples/2) # Both kx and ky are same
 
-        self.KX, self.KY = np.meshgrid(self.kx, self.ky, indexing='xy')
+        self.KX, self.KY = np.meshgrid(kx, kx, indexing='xy')
 
     def Pk(self, kx, ky):
-        return 1.*np.where(kx**2 + ky**2 != 0., (self.Pk2((kx**2 + ky**2)**0.5))**0.5, 0.0)
+        return np.where(kx**2. + ky**2. > 0., (self.Pk2((kx**2. + ky**2.)**0.5))**0.5, 0.0)
 
     def randomfield(self):
-        noise = fft2(np.random.normal(size = (self.samples, self.samples)))
+        noise = fftshift(fft2(np.random.normal(size = (self.samples, self.samples))))
         amplitude = self.Pk(self.KX, self.KY)
+        
+        amplitude = np.where(amplitude > 1e-15, amplitude, 0.)
         return fftshift(ifft2(noise * amplitude))
-

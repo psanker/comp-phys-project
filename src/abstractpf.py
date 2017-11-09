@@ -69,10 +69,9 @@ class AbstractPupilFunction(object):
         if (self._X is None  or self._Y is None):
             scale = self.padscale * self.diameter
 
-            x = np.linspace(-scale, scale, self.samples)
-            y = np.linspace(-scale, scale, self.samples)
+            x = np.linspace(-scale, scale, self.samples) # Both x & y are same
 
-            X, Y = np.meshgrid(x, y, indexing='xy') # Note: this behaves like X[j, i]
+            X, Y = np.meshgrid(x, x, indexing='xy') # Note: this behaves like X[j, i]
 
             # Store mesh for later use
             self._X = X
@@ -100,11 +99,11 @@ class AbstractPupilFunction(object):
             return img
         else:
             # Use Gaussian filtering on image to smooth edges
-            filtered_re = gaussian_filter(img.real, 1.1, order=0)
-            filtered_im = gaussian_filter(img.imag, 1.1, order=0)
+            filtered_re = gaussian_filter(img.real, 1., order=0)
+            filtered_im = gaussian_filter(img.imag, 1., order=0)
             return filtered_re + 1j*filtered_im
 
-    def psf(self, k, filtering=False):
+    def psf(self, k=20., filtering=False):
         '''
         FFT the pupil function, given its parameters, and produce the PSF
         '''
