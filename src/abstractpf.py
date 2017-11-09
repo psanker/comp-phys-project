@@ -99,18 +99,23 @@ class AbstractPupilFunction(object):
             return img
         else:
             # Use Gaussian filtering on image to smooth edges
-            filtered_re = gaussian_filter(img.real, 1., order=0)
-            filtered_im = gaussian_filter(img.imag, 1., order=0)
+            filtered_re = gaussian_filter(img.real, 1., order=0, mode='constant')
+            filtered_im = gaussian_filter(img.imag, 1., order=0, mode='constant')
             return filtered_re + 1j*filtered_im
 
-    def psf(self, k=20., filtering=False):
+    def psf(self, k=20., filtering=False, noshift=False):
         '''
         FFT the pupil function, given its parameters, and produce the PSF
         '''
         shift_test = fftshift(self.render(k, filtering=filtering))
-        shift = fftshift(fft2(shift_test))
+        transform  = None
+        
+        if noshift:
+            transform = fft2(shift_test)
+        else:
+            transform = fftshift(fft2(shift_test))
 
-        return np.abs(np.log10(1. + shift))**2.
+        return np.abs(np.log10(1. + transform))**2.
 
     def pFunc(self, x, y):
         '''

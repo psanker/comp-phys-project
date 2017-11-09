@@ -16,12 +16,13 @@ from .gaussianrndf import GaussianRandomField
 #### Globals ####
 PI     = np.pi
 TWO_PI = 2.*PI
+ps     = 1.183 # padding scale factor
 
-pupil  = SimplePupilFunction(diameter=6., samples=128, padscale=1.1)
-dirty  = DirtySimplePupilFunction(diameter=50, samples=256, padscale=1.1)
-caspup = CassegrainPupilFunction(diameter=6.5, b=2., samples=256, padscale=1.1)
-dcaspf = DirtyCassegrainPupilFunction(diameter=50, b=20, samples=256, padscale=1.1)
-square = SquarePupilFunction(diameter=50, samples=256, padscale=1.1)
+pupil  = SimplePupilFunction(diameter=6.5, samples=1024, padscale=ps)
+dirty  = DirtySimplePupilFunction(diameter=6.5, samples=1024, padscale=ps)
+caspup = CassegrainPupilFunction(diameter=6.5, b=1.5, samples=1024, padscale=ps)
+dcaspf = DirtyCassegrainPupilFunction(diameter=6.5, b=1.5, samples=1024, padscale=ps)
+square = SquarePupilFunction(diameter=6.5, samples=1024, padscale=ps)
 gauss  = GaussianRandomField(pupil, lambda s : np.where(s > 1e-15, (1. / s)**(3.0), 0.))
 
 #### Memory management ####
@@ -47,8 +48,8 @@ def render_pupil(pupilFunc, k = TWO_PI, color=None):
     pupilFunc: The complex Pupil Function to analyze
     k: Wavenumber of light (2π / λ)
     '''
-    s     = pupilFunc.padscale * pupilFunc.diameter
-    s_map = [-s, s, s, -s]
+    s     = pupilFunc.padscale * pupilFunc.diameter # Scaling based on padding and diameter
+    s_map = [-s, s, s, -s]                          # Because imshow is oriented top-left, remap s extrema
 
     fig, ax = plt.subplots()
 
@@ -59,20 +60,20 @@ def render_pupil(pupilFunc, k = TWO_PI, color=None):
 
     ax.set_aspect('equal')
 
-def render_psf(pupilFunc, k = TWO_PI, color=None):
+def render_psf(pupilFunc, k = TWO_PI, color=None, noshift=False):
     '''
     pupilFunc: The complex Pupil Function to analyze
     k: Wavenumber of light (2π / λ)
     '''
     # PSF
-    psf = pupilFunc.psf(filtering=True)  # Generate PSF
-    psf = psf / np.amax(psf)             # Rescale output so max value is 1. (luminance)
-    psf = np.where(psf > 1e-15, psf, 0.) # Filter very low values
+    psf = pupilFunc.psf(filtering=True, noshift=noshift)      # Generate PSF
+    psf = psf / np.amax(psf)                                  # Rescale output so max value is 1. (luminance)
+    psf = np.where(psf > 1e-15, psf, 0.)                      # Filter very low values
 
     # Relevant k's
-    spacing = 1. / (2. * pupilFunc.nyqfreq())
-    k       = fftshift(fftfreq(pupilFunc.samples, d=spacing))
-    k_map   = [k[0], k[-1], k[-1], k[0]]
+    spacing = 1. / (2. * pupilFunc.nyqfreq())                 # Spacing from Nyquist frequency
+    k       = fftshift(fftfreq(pupilFunc.samples, d=spacing)) # The actual k's
+    k_map   = [k[0], k[-1], k[-1], k[0]]                      # Because imshow is oriented top-left, remap k extrema
 
     # Draw
     fig, ax = plt.subplots()
@@ -102,10 +103,10 @@ def plot_gsimplepupil():
 
 # PSFs
 def plot_simplepsf():
-    render_psf(pupil)
+    render_psf(pupil, color='magma')
 
 def plot_gsimplepsf():
-    render_psf(dirty)
+    render_psf(dirty, color='magma')
 
 def plot_cassepsf():
     render_psf(caspup)
