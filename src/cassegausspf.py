@@ -10,7 +10,7 @@ class DirtyCassegrainPupilFunction(CassegrainPupilFunction):
     '''
 
     def __init__(self, **opts):
-        super().__init__(**opts)
+        super(DirtyCassegrainPupilFunction, self).__init__(**opts)
 
         # Private variable because yeah.
         self.__pk2 = lambda k : np.where(k > 1e-15, (1. / k)**(2.), 0.)
