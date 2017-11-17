@@ -17,12 +17,13 @@ from .gaussianrndf import GaussianRandomField
 PI     = np.pi
 TWO_PI = 2.*PI
 ps     = 1.183 # padding scale factor
+N_samples = 256
 
-pupil  = SimplePupilFunction(diameter=6.5, samples=1024, padscale=ps)
-dirty  = DirtySimplePupilFunction(diameter=6.5, samples=1024, padscale=ps)
-caspup = CassegrainPupilFunction(diameter=6.5, b=1.5, samples=1024, padscale=ps)
-dcaspf = DirtyCassegrainPupilFunction(diameter=6.5, b=1.5, samples=1024, padscale=ps)
-square = SquarePupilFunction(diameter=6.5, samples=1024, padscale=ps)
+pupil  = SimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
+dirty  = DirtySimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
+caspup = CassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
+dcaspf = DirtyCassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
+square = SquarePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
 gauss  = GaussianRandomField(pupil, lambda s : np.where(s > 1e-15, (1. / s)**(3.0), 0.))
 
 #### Memory management ####
