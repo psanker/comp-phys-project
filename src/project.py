@@ -91,13 +91,13 @@ def render_psf(pupilFunc, k = TWO_PI, color=None, noshift=False):
 #### Interactivity ####
 # Pupils
 def plot_simplepupil():
-    render_pupil(pupil)
+    render_pupil(pupil, color='gray')
 
 def plot_cassepupil():
-    render_pupil(caspup)
+    render_pupil(caspup, color='gray')
 
 def plot_squarepupil():
-    render_pupil(square)
+    render_pupil(square, color='gray')
 
 def plot_gsimplepupil():
     render_pupil(dirty, k = TWO_PI / 20e-2, color='gray')
