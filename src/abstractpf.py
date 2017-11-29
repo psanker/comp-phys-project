@@ -24,6 +24,7 @@ class AbstractPupilFunction(object):
         self.samples  = 100                                          # Number of sample points per dimension
         self.padscale = 1.                                           # Number of diameters to use as 0-padding
         self.spectrum = TWO_PI / np.linspace(400, 700, self.samples) # k-space of visual spectrum -- units of nm^(-1) !
+        self.struts   = 0                                            # Number of struts in the pupil
 
         # Reset private variables in object
         self._clear()
@@ -56,6 +57,8 @@ class AbstractPupilFunction(object):
             self.samples = v
         elif k == 'padscale':
             self.padscale = v
+        elif k == 'struts':
+            self.struts = v
         else:
             self.opts[k] = v
 
@@ -109,7 +112,7 @@ class AbstractPupilFunction(object):
         '''
         shift_test = fftshift(self.render(k, filtering=filtering))
         transform  = None
-        
+
         if noshift:
             transform = fft2(shift_test)
         else:
