@@ -128,4 +128,5 @@ def plot_gauss():
     plt.imshow(gauss.randomfield().real, interpolation='none', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
     plt.ylabel('$m^{\\alpha}$')
+    plt.title('Gaussian Random Field')
     # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
