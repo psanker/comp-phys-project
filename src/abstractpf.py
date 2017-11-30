@@ -110,7 +110,7 @@ class AbstractPupilFunction(object):
         '''
         FFT the pupil function, given its parameters, and produce the PSF
         '''
-        shift_test = fftshift(self.render(k, filtering=filtering))
+        shift_test = self.render(k, filtering=filtering)
         transform  = None
 
         if noshift:

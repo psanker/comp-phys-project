@@ -12,12 +12,13 @@ from .cassegrainpf import CassegrainPupilFunction
 from .cassegausspf import DirtyCassegrainPupilFunction
 from .squarepf import SquarePupilFunction
 from .gaussianrndf import GaussianRandomField
+from .modelpf import ModelPupilFunction
 
 #### Globals ####
 PI     = np.pi
 TWO_PI = 2. * PI
-ps     = 1.183  # padding scale factor
-N_samples = 256
+ps     = 2.  # padding scale factor
+N_samples = 512
 
 # DIAMETERS ARE IN METERS
 pupil  = SimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
@@ -25,6 +26,7 @@ dirty  = DirtySimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
 caspup = CassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
 dcaspf = DirtyCassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
 square = SquarePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
+model  = ModelPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
 gauss  = GaussianRandomField(pupil, lambda s: np.where(s > 1e-15, (1. / s)**(3.0), 0.))
 
 #### Memory management ####
@@ -45,7 +47,7 @@ def terminate():
     dcaspf = None
 
 #### Drawing logic ####
-def render_pupil(pupilFunc, k=TWO_PI, color=None):
+def render_pupil(pupilFunc, k=TWO_PI, color=None, filtering=True):
     '''
     pupilFunc: The complex Pupil Function to analyze
     k: Wavenumber of light (2π / λ)
@@ -56,21 +58,21 @@ def render_pupil(pupilFunc, k=TWO_PI, color=None):
     fig, ax = plt.subplots()
 
     if color is not None:
-        ax.imshow(pupilFunc.render(k, filtering=True).real, cmap=plt.get_cmap(color), extent=s_map)
+        ax.imshow(pupilFunc.render(k, filtering=filtering).real, cmap=plt.get_cmap(color), extent=s_map)
     else:
-        ax.imshow(pupilFunc.render(k, filtering=True).real, extent=s_map)
+        ax.imshow(pupilFunc.render(k, filtering=filtering).real, extent=s_map)
 
     ax.set_aspect('equal')
     ax.set_xlabel('$x$ ($m$)')
     ax.set_ylabel('$y$ ($m$)')
 
-def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False):
+def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True):
     '''
     pupilFunc: The complex Pupil Function to analyze
     k: Wavenumber of light (2π / λ)
     '''
     # PSF
-    psf = pupilFunc.psf(filtering=True, noshift=noshift)       # Generate PSF
+    psf = pupilFunc.psf(filtering=filtering, noshift=noshift)       # Generate PSF
     psf = psf / np.amax(psf)                                   # Rescale output so max value is 1. (luminance)
     psf = np.where(psf > 1e-15, psf, 0.)                       # Filter very low values
 
@@ -105,6 +107,9 @@ def plot_squarepupil():
 def plot_gsimplepupil():
     render_pupil(dirty, k=TWO_PI / 20e-2, color='gray')
 
+def plot_modelpupil():
+    render_pupil(model, k=TWO_PI / 20e-2, color='gray')
+
 # PSFs
 def plot_simplepsf():
     render_psf(pupil, color='magma')
@@ -113,13 +118,16 @@ def plot_gsimplepsf():
     render_psf(dirty, color='magma')
 
 def plot_cassepsf():
-    render_psf(caspup)
+    render_psf(caspup, color='magma')
 
 def plot_gcassepsf():
     render_psf(dcaspf)
 
 def plot_squarepsf():
     render_psf(square)
+
+def plot_modelpsf():
+    render_psf(model, color='magma')
 
 # Misc
 def plot_gauss():
