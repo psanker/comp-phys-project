@@ -105,7 +105,7 @@ def plot_squarepupil():
     render_pupil(square, color='gray')
 
 def plot_gsimplepupil():
-    render_pupil(dirty, k=TWO_PI / 20e-2, color='gray')
+    render_pupil(dirty, k=TWO_PI / 600e-9, color='gray')
 
 def plot_modelpupil():
     render_pupil(model, k=TWO_PI / 20e-2, color='gray')
