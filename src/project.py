@@ -18,7 +18,7 @@ from .modelpf import ModelPupilFunction
 PI     = np.pi
 TWO_PI = 2. * PI
 ps     = 2.  # padding scale factor
-N_samples = 4096
+N_samples = 256
 
 # DIAMETERS ARE IN METERS
 pupil  = SimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
@@ -27,7 +27,7 @@ caspup = CassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscal
 dcaspf = DirtyCassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
 square = SquarePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
 model  = ModelPupilFunction(diameter=.250, b=.110, samples=N_samples, padscale=ps)
-gauss  = GaussianRandomField(pupil, lambda s: np.where(s > 1e-15, (1. / s)**(3.0), 0.))
+gauss  = GaussianRandomField(pupil)
 
 #### Memory management ####
 def terminate():

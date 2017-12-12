@@ -48,13 +48,11 @@ class GaussianRandomField(object):
 
         return a * (num / dem) * expfac
 
-    def randomfield(self, diameter):
+    def randomfield(self):
         r0 = 20e-2 # coherence
-        a  = 0.162
+        a  = 0.162 
 
-        phase = a * (diameter / r0)**(5/6)
-
-        noise = fftshift(fft2(np.random.normal(size=(self.samples, self.samples), scale=phase)))
+        noise = fftshift(fft2(np.random.normal(size=(self.samples, self.samples))))
         amplitude = self.Pk(self.KX, self.KY) * np.conj(self.Pk(self.KX, self.KY))
 
         amplitude = np.where(amplitude > 1e-15, amplitude, 0.)

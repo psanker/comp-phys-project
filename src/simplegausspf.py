@@ -11,15 +11,12 @@ class DirtySimplePupilFunction(SimplePupilFunction):
 
     def __init__(self, **opts):
         super(DirtySimplePupilFunction, self).__init__(**opts)
-
-        # Private variable because yeah.
-        self.__pk2 = lambda k : np.where(k > 1e-15, (1. / k)**(2.), 0.)
-
+        
     def wFunc(self, x, y):
 
         # Init the field
         if not hasattr(self, 'gaussfield'):
-            self.gaussfield = GaussianRandomField(self, self.__pk2)
+            self.gaussfield = GaussianRandomField(self)
 
         # In case the generated field is not rendered
         # We want to preserve the same field for a single instance to simulate
