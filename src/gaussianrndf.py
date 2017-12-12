@@ -28,8 +28,13 @@ class GaussianRandomField(object):
     def Pk(self, kx, ky):
         return np.where(kx**2. + ky**2. > 0., (self.Pk2((kx**2. + ky**2.)**0.5))**0.5, 0.0)
 
-    def randomfield(self):
-        noise = fftshift(fft2(np.random.normal(size = (self.samples, self.samples))))
+    def randomfield(self, diameter):
+        r0 = 20e-2 # coherence
+        a  = 0.162
+
+        phase = a * (diameter / r0)**(5/6)
+
+        noise = fftshift(fft2(np.random.normal(size = (self.samples, self.samples), scale=phase)))
         amplitude = self.Pk(self.KX, self.KY)
         
         amplitude = np.where(amplitude > 1e-15, amplitude, 0.)

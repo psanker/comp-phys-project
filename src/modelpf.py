@@ -12,7 +12,7 @@ class ModelPupilFunction(AbstractPupilFunction):
     - W(x, y) = 0 for no phase shifting
     '''
 
-    strut_width = 0.05
+    strut_width = 0.04
 
     def pFunc(self, x, y):
         pass1 = np.where((x)**2 + (y)**2 <= (self.radius())**2, 1., 0.)
@@ -23,3 +23,13 @@ class ModelPupilFunction(AbstractPupilFunction):
 
     def wFunc(self, x, y):
         return np.zeros((self.samples, self.samples))
+
+    def coherence_length(self, wav, theta, path=50, cn20=1e-17):
+        '''
+        path:  Path distance through the atmosphere (in km)
+        theta: Zenith angle (0 to π/2)
+        wav:   Wavelength of light (in nm)
+        '''
+
+        a = 0.185
+
