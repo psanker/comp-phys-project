@@ -49,7 +49,7 @@ class GaussianRandomField(object):
         dem = r0**(5./3.)
         expfac = np.exp(-1. * (k2 / k_min**2))
 
-        return (num / dem) * expfac
+        return a * (num / dem) * expfac
 
     def randomfield(self, diameter):
         r0 = 20e-2 # coherence
