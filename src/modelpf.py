@@ -35,7 +35,7 @@ class ModelPupilFunction(AbstractPupilFunction):
         # We want to preserve the same field for a single instance to simulate
         # a particular mirror. Also good for consistent and comparable images
         if not hasattr(self, 'renderedField'):
-            self.renderedField = self.gaussfield.randomfield()
+            self.renderedField = self.gaussfield.randomfield(self.atm_Pk(self.gaussfield.KX, self.gaussfield.KY))
 
         return self.renderedField
  
