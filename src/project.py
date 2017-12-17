@@ -75,7 +75,7 @@ def render_pupil(pupilFunc, k=TWO_PI, color=None, filtering=True):
     ax.set_xlabel('$x$ ($m$)')
     ax.set_ylabel('$y$ ($m$)')
 
-def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True):
+def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True, limited=True):
     '''
     pupilFunc: The complex Pupil Function to analyze
     k: Wavenumber of light (2π / λ)
@@ -102,9 +102,10 @@ def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True):
     ax.set_xlabel('$k_x$ ($m^{-1}$)')
     ax.set_ylabel('$k_y$ ($m^{-1}$)')
 
-    #adding limits for comparison purposes
-    ax.set_xlim([-10, 10])
-    ax.set_ylim([-10, 10])
+    if limited:
+        # adding limits for comparison purposes
+        ax.set_xlim([-10, 10])
+        ax.set_ylim([-10, 10])
 
 def render_psf_range(pupilFunc, k, color=None, noshift=False, filtering=True):
     '''
@@ -170,7 +171,7 @@ def plot_gsimplepsf():
     render_psf(dirty, color='magma')
 
 def plot_cassepsf():
-    render_psf(caspup, color='magma')
+    render_psf(caspup, color='magma', limited=False)
 
 def plot_gcassepsf():
     render_psf(dcaspf)
@@ -205,7 +206,8 @@ def plot_gauss():
 
         return ret
 
-    field = gauss.randomfield(test_power_spec)
+    field = gauss.randomfield(ModelPupilFunction.atm_Pk)
+    field = np.sqrt(field.real**2. + field.imag**2.)
     field = field / np.amax(field)
 
     # Relevant k's
@@ -214,7 +216,7 @@ def plot_gauss():
     k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(np.sqrt(field.real**2 + field.imag**2)), vmax=np.amax(np.sqrt(field.real**2 + field.imag**2)))
+    plt.imshow(field, interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(field), vmax=np.amax(field))
     plt.colorbar()
     plt.xlabel('$m^{-1}$')
     plt.ylabel('$m^{-1}$')
@@ -224,6 +226,7 @@ def plot_gauss():
 def plot_gaussatm():
     # check the random field is working
     field = gauss.randomfield(ModelPupilFunction.atm_Pk)
+    field = np.sqrt(field.real**2. + field.imag**2.)
     field = field / np.amax(field)
 
     # Relevant k's
@@ -232,7 +235,7 @@ def plot_gaussatm():
     k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(np.sqrt(field.real**2 + field.imag**2)), vmax=np.amax(np.sqrt(field.real**2 + field.imag**2)))
+    plt.imshow(field, interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(field), vmax=np.amax(field))
     plt.colorbar()
     plt.xlabel('$m^{-1}$')
     plt.ylabel('$m^{-1}$')
