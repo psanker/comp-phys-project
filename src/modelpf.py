@@ -24,12 +24,4 @@ class ModelPupilFunction(AbstractPupilFunction):
     def wFunc(self, x, y):
         return np.zeros((self.samples, self.samples))
 
-    def coherence_length(self, wav, theta, path=50, cn20=1e-17):
-        '''
-        path:  Path distance through the atmosphere (in km)
-        theta: Zenith angle (0 to π/2)
-        wav:   Wavelength of light (in nm)
-        '''
-
-        a = 0.185
 
