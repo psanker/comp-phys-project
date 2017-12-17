@@ -235,7 +235,6 @@ def plot_gaussatm():
     k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-<<<<<<< HEAD
     plt.imshow(field, interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(field), vmax=np.amax(field))
     cbar = plt.colorbar()
     cbar.set_label('phase shift')
