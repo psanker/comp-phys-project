@@ -142,8 +142,9 @@ def plot_modelpsf():
 # Misc
 def plot_gauss():
     # check the random field is working
+    pk = model.atm_Pk(gauss.KX, gauss.KY)
     plt.figure()
-    plt.imshow(np.sqrt(gauss.randomfield().real**2 + gauss.randomfield().imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
+    plt.imshow(np.sqrt(gauss.randomfield(pk).real**2 + gauss.randomfield(pk).imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
     plt.ylabel('$m^{\\alpha}$')
     plt.title('Gaussian Random Field')

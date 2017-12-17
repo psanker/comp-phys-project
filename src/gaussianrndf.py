@@ -20,42 +20,11 @@ class GaussianRandomField(object):
         kx               = np.arange(-self.samples/2, self.samples/2) # Both kx and ky are same
         self.KX, self.KY = np.meshgrid(kx, kx, indexing='xy')
 
-    def Pk(self, kx, ky):
-        # http://community.dur.ac.uk/james.osborn/thesis/thesisse3.html
-        l_min = 1e-3  # meters
-        l_max = 1e2   # meters
-        r0    = 20e-2 # meters
-
-        k_max = 5.92 / l_min
-        k_min = TWO_PI / l_max
-
-        k2 = kx**2. + ky**2.
-
-        k2 = np.where(k2 < k_min**2, 0., k2)
-        k2 = np.where(k2 > k_max**2, 0., k2)
-
-        a  = 0.023
-
-        num = (np.abs(k2 + k_min**2))**(-11./6.)
-        dem = r0**(5./3.)
-        expfac = np.exp(-1. * (k2 / k_max**2))
-
-        return a * (num / dem) * expfac
-
-    # def kolmogorov_Pk(self, kx, ky):
-    #    a  = 0.0023
-    #    r0 = 20e-2 # meters
-    #
-    #    k = np.sqrt(kx**2 + ky**2)
-    #
-    #    return a * (r0**(-5./3.)) * (k**(-11./3.))
-
-    def randomfield(self):
+    def randomfield(self, pk):
         noise = fft2(np.random.normal(size=(self.samples, self.samples)))
 
-        pk  = self.Pk(self.KX, self.KY)
         pks = np.conj(pk)
 
         amplitude = np.sqrt(pks * pk)
-        
+
         return fftshift(ifft2(noise * amplitude))
