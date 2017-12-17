@@ -229,7 +229,8 @@ def plot_gaussatm():
 
     plt.figure()
     plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(np.sqrt(field.real**2 + field.imag**2)), vmax=np.amax(np.sqrt(field.real**2 + field.imag**2)))
-    plt.colorbar()
+    cbar = plt.colorbar()
+    cbar.set_label('phase shift')
     plt.xlabel('$m^{-1}$')
     plt.ylabel('$m^{-1}$')
     plt.title('Amplitude of von Karman Turbulence')
