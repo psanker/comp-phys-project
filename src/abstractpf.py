@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy.fftpack import fft2
-from scipy.fftpack import fftshift
+from scipy.fftpack import fft2, fftshift, fftfreq
 from scipy.ndimage.filters import gaussian_filter
 import sys
 
@@ -36,6 +35,8 @@ class AbstractPupilFunction(object):
         self.opts = {}
         self._X   = None
         self._Y   = None
+        self._KX  = None
+        self._KY  = None
 
     def applySettings(self, vals):
         '''
@@ -81,6 +82,21 @@ class AbstractPupilFunction(object):
             self._Y = Y
 
         return self._X, self._Y
+
+    def fourierMesh(self):
+        '''
+        Generates the mesh in Fourier space associated with this pupil (i.e. where the PSF lives)
+        '''
+        if (self._KX is None  or self._KY is None):
+            spacing = 1. / (2. * self.nyqfreq())                      # Spacing from Nyquist frequency
+            k       = fftshift(fftfreq(self.samples, d=spacing))
+
+            KX, KY  = np.meshgrid(k, k)
+
+            self._KX = KX
+            self._KY = KY
+
+        return self._KX, self._KY
 
     def radius(self):
         # Shortcut function to the radius
