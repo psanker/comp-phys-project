@@ -4,14 +4,9 @@ import numpy as np
 from scipy.fftpack import fft2
 from scipy.fftpack import ifft2
 from scipy.fftpack import fftshift
-import sys
 
 PI     = np.pi
 TWO_PI = 2. * PI
-
-import numpy as np
-
-TWO_PI = 2. * np.pi
 
 class GaussianRandomField(object):
     '''
@@ -22,9 +17,18 @@ class GaussianRandomField(object):
         # Number of samples is consistent with pupil function
         self.samples = pupil.samples
 
-        kx = np.arange(-self.samples/2, self.samples/2) # Both kx and ky are same
-
+        kx               = np.arange(-self.samples/2, self.samples/2) # Both kx and ky are same
         self.KX, self.KY = np.meshgrid(kx, kx, indexing='xy')
+
+    def fftIndgen(self, n):
+        a = np.arange(0, n//2)
+        b = np.arange(1, n//2+1)
+
+        print(len(a))
+        print(len(b))
+        
+        b = [-i for i in b[::-1]]
+        return a + b
 
     def Pk(self, kx, ky):
         # http://community.dur.ac.uk/james.osborn/thesis/thesisse3.html
@@ -48,12 +52,31 @@ class GaussianRandomField(object):
 
         return a * (num / dem) * expfac
 
+    def kolmogorov_Pk(self, kx, ky):
+        a  = 0.0023
+        r0 = 20e-2 # meters
+
+        k = np.sqrt(kx**2 + ky**2)
+
+        return a * (r0**(-5./3.)) * (k**(-11./3.))
+
     def randomfield(self):
-        r0 = 20e-2 # coherence
-        a  = 0.162 
+        noise = fft2(np.random.normal(size=(self.samples, self.samples)))
 
-        noise = fftshift(fft2(np.random.normal(size=(self.samples, self.samples))))
-        amplitude = self.Pk(self.KX, self.KY) * np.conj(self.Pk(self.KX, self.KY))
+        pk  = self.kolmogorov_Pk(self.KX, self.KY)
+        pks = np.conj(pk)
 
-        amplitude = np.where(amplitude > 1e-15, amplitude, 0.)
+        amplitude = np.sqrt(pks * pk)
+        
         return fftshift(ifft2(noise * amplitude))
+
+    def randomfield2(self):
+        noise = fft2(np.random.normal(size=(self.samples, self.samples)))
+        amplitude = np.zeros((self.samples, self.samples))
+
+        for i, kx in enumerate(self.fftIndgen(self.samples)):
+            for j, ky in enumerate(self.fftIndgen(self.samples)):           
+                amplitude[i, j] = self.Pk(kx, ky)
+                amplitude[i, j] = np.sqrt(np.conj(amplitude[i, j]) * amplitude[i, j])
+
+        return ifft2(noise * amplitude)

@@ -133,7 +133,7 @@ def plot_modelpsf():
 def plot_gauss():
     # check the random field is working
     plt.figure()
-    plt.imshow(gauss.randomfield().real, interpolation='none', cmap=plt.get_cmap('bone'))
+    plt.imshow(gauss.randomfield2().real, interpolation='gaussian', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
     plt.ylabel('$m^{\\alpha}$')
     plt.title('Gaussian Random Field')
