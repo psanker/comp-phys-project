@@ -24,7 +24,7 @@ k_blue  = TWO_PI / (400e-9)
 k_red   = TWO_PI / (700e-9)
 k_green = TWO_PI / (550e-9)
 
-diameter = 6.5
+diameter = 2.5
 
 # DIAMETERS ARE IN METERS
 pupil  = SimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
@@ -96,11 +96,15 @@ def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True):
     if color is not None:
         ax.imshow(psf, cmap=plt.get_cmap(color), extent=k_map)
     else:
-        ax.imshow(psf, extent=k_map)
+        ax.imshow((psf), extent=k_map)
 
     ax.set_aspect('equal')
     ax.set_xlabel('$k_x$ ($m^{-1}$)')
     ax.set_ylabel('$k_y$ ($m^{-1}$)')
+
+    #adding limits for comparison purposes
+    ax.set_xlim([-10, 10])
+    ax.set_ylim([-10, 10])
 
 def render_psf_range(pupilFunc, k, color=None, noshift=False, filtering=True):
     '''
