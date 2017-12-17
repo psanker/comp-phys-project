@@ -20,7 +20,6 @@ class GaussianRandomField(object):
         kx               = np.arange(-self.samples/2, self.samples/2) # Both kx and ky are same
         self.KX, self.KY = np.meshgrid(kx, kx, indexing='xy')
 
-
     def randomfield(self, pk):
         noise = fft2(np.random.normal(size=(self.samples, self.samples)))
 

@@ -1,5 +1,3 @@
-import numpy as np
-
 from .simplepf import SimplePupilFunction
 from .gaussianrndf import GaussianRandomField
 
@@ -11,7 +9,7 @@ class DirtySimplePupilFunction(SimplePupilFunction):
 
     def __init__(self, **opts):
         super(DirtySimplePupilFunction, self).__init__(**opts)
-        
+
     def wFunc(self, x, y):
 
         # Init the field

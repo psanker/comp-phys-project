@@ -1,6 +1,7 @@
 import numpy as np
 
 from .abstractpf import AbstractPupilFunction
+from .gaussianrndf import GaussianRandomField
 
 #### Globals ####
 PI     = np.pi
@@ -13,7 +14,7 @@ class ModelPupilFunction(AbstractPupilFunction):
     This is our **real** model
 
     - P(x, y) = Same as the SimplePupilFunction, but with a hole with radius 'b'
-    - W(x, y) = 0 for no phase shifting
+    - W(x, y) is a Gaussian random field based on the von Karman turbulence model
     '''
 
     strut_width = 0.04
@@ -26,8 +27,18 @@ class ModelPupilFunction(AbstractPupilFunction):
         return pass4
 
     def wFunc(self, x, y):
-        return np.zeros((self.samples, self.samples))
+        # Init the field
+        if not hasattr(self, 'gaussfield'):
+            self.gaussfield = GaussianRandomField(self)
 
+        # In case the generated field is not rendered
+        # We want to preserve the same field for a single instance to simulate
+        # a particular mirror. Also good for consistent and comparable images
+        if not hasattr(self, 'renderedField'):
+            self.renderedField = self.gaussfield.randomfield(self.atm_Pk(self.gaussfield.KX, self.gaussfield.KY))
+
+        return self.renderedField
+ 
     def atm_Pk(self, kx, ky):
         '''
         Models atmospheric turbulence according to Von Karman spectrum
@@ -53,13 +64,3 @@ class ModelPupilFunction(AbstractPupilFunction):
         expfac = np.exp(-1. * (k2 / k_max**2))
 
         return a * (num / dem) * expfac
-
-    # def kolmogorov_Pk(self, kx, ky):
-    #    a  = 0.0023
-    #    r0 = 20e-2 # meters
-    #
-    #    k = np.sqrt(kx**2 + ky**2)
-    #
-    #    return a * (r0**(-5./3.)) * (k**(-11./3.))
-
-
