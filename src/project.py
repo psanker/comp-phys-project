@@ -131,10 +131,10 @@ def plot_modelpsf():
 
 # Misc
 def plot_gauss():
-    # check the random field is working
+# check the random field is working
     plt.figure()
     plt.imshow(gauss.randomfield2().real, interpolation='gaussian', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
     plt.ylabel('$m^{\\alpha}$')
     plt.title('Gaussian Random Field')
-    # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
+# It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp

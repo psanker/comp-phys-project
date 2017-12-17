@@ -26,7 +26,7 @@ class GaussianRandomField(object):
 
         print(len(a))
         print(len(b))
-        
+
         b = [-i for i in b[::-1]]
         return a + b
 
@@ -67,7 +67,7 @@ class GaussianRandomField(object):
         pks = np.conj(pk)
 
         amplitude = np.sqrt(pks * pk)
-        
+
         return fftshift(ifft2(noise * amplitude))
 
     def randomfield2(self):
@@ -75,7 +75,7 @@ class GaussianRandomField(object):
         amplitude = np.zeros((self.samples, self.samples))
 
         for i, kx in enumerate(self.fftIndgen(self.samples)):
-            for j, ky in enumerate(self.fftIndgen(self.samples)):           
+            for j, ky in enumerate(self.fftIndgen(self.samples)):
                 amplitude[i, j] = self.Pk(kx, ky)
                 amplitude[i, j] = np.sqrt(np.conj(amplitude[i, j]) * amplitude[i, j])
 
