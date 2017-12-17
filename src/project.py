@@ -202,13 +202,15 @@ def plot_gauss():
     field = gauss.randomfield(test_power_spec)
     field = field / np.amax(field)
 
-    s     = pupil.padscale * pupil.diameter   # Scaling based on padding and diameter
-    s_map = [-s, s, s, -s]                    # Because imshow is oriented top-left, remap s extrema
+    # Relevant k's
+    spacing = 1. / (2. * pupil.nyqfreq())                  # Spacing from Nyquist frequency
+    k       = fftshift(fftfreq(pupil.samples, d=spacing))  # The actual k's
+    k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=s_map)
-    plt.xlabel('$m$')
-    plt.ylabel('$m$')
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map)
+    plt.xlabel('$m^{-1}$')
+    plt.ylabel('$m^{-1}$')
     plt.title('Gaussian Random Field ($k^{%d}$)' % (alpha))
 # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
 
@@ -217,13 +219,15 @@ def plot_gaussatm():
     field = gauss.randomfield(ModelPupilFunction.atm_Pk)
     field = field / np.amax(field)
 
-    s     = pupil.padscale * pupil.diameter   # Scaling based on padding and diameter
-    s_map = [-s, s, s, -s]                    # Because imshow is oriented top-left, remap s extrema
+    # Relevant k's
+    spacing = 1. / (2. * pupil.nyqfreq())                  # Spacing from Nyquist frequency
+    k       = fftshift(fftfreq(pupil.samples, d=spacing))  # The actual k's
+    k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=s_map)
-    plt.xlabel('$m$')
-    plt.ylabel('$m$')
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map)
+    plt.xlabel('$m^{-1}$')
+    plt.ylabel('$m^{-1}$')
     plt.title('Amplitude of von Karman Turbulence')
 
 def test_power_spec(kx, ky, power=-2.):

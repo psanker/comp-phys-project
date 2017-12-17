@@ -50,7 +50,7 @@ class ModelPupilFunction(AbstractPupilFunction):
         l_max = 20.   # meters
         r0    = 20e-2 # meters
 
-        k_M = np.sqrt(5.92 / l_min)
+        k_M = 5.92 / l_min
         k_0 = TWO_PI / l_max
 
         k2 = kx**2. + ky**2.
