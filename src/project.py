@@ -185,7 +185,7 @@ def plot_modelpsfcomp():
     render_psf_range(model, [k_red, k_green, k_blue], color='magma')
 
 # Misc
-def plot_gauss ():
+def plot_gauss():
     # check the random field is working
     alpha = -2.
 
@@ -202,11 +202,14 @@ def plot_gauss ():
     field = gauss.randomfield(test_power_spec)
     field = field / np.amax(field)
 
+    s     = pupil.padscale * pupil.diameter   # Scaling based on padding and diameter
+    s_map = [-s, s, s, -s]                    # Because imshow is oriented top-left, remap s extrema
+
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
-    plt.xlabel('$m^{\\alpha}$')
-    plt.ylabel('$m^{\\alpha}$')
-    plt.title('Gaussian Random Field ($\\alpha=%d$)' % (alpha))
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=s_map)
+    plt.xlabel('$m$')
+    plt.ylabel('$m$')
+    plt.title('Gaussian Random Field ($k^{%d}$)' % (alpha))
 # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
 
 def plot_gaussatm():
@@ -214,11 +217,14 @@ def plot_gaussatm():
     field = gauss.randomfield(ModelPupilFunction.atm_Pk)
     field = field / np.amax(field)
 
+    s     = pupil.padscale * pupil.diameter   # Scaling based on padding and diameter
+    s_map = [-s, s, s, -s]                    # Because imshow is oriented top-left, remap s extrema
+
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
-    plt.xlabel('$m^{\\alpha}$')
-    plt.ylabel('$m^{\\alpha}$')
-    plt.title('Gaussian Random Field')
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=s_map)
+    plt.xlabel('$m$')
+    plt.ylabel('$m$')
+    plt.title('Amplitude of von Karman Turbulence')
 
 def test_power_spec(kx, ky, power=-2.):
     k = np.sqrt(kx**2. + ky**2.)
