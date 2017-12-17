@@ -64,7 +64,7 @@ class AbstractPupilFunction(object):
 
     def configurationMesh(self):
         '''
-        For FFT padding, the image is defined from [-D, D] on both x & y domains
+        For FFT padding, the image is defined from [-sD, sD] on both x & y domains
 
         Also, keep in mind the Nyquist freq 1 / 2*T where T is the spacing
         Since 2D = N*T, T = 2D / N
@@ -88,7 +88,7 @@ class AbstractPupilFunction(object):
 
     def nyqfreq(self):
         # Shortcut to the Nyquist frequency
-        return self.samples / (4. * self.diameter) # 1 / (2 * (2D / N))
+        return self.samples / (4. * self.diameter * self.padscale) # 1 / (2 * (2sD / N))
 
     def render(self, k, filtering=False):
         '''
@@ -118,7 +118,9 @@ class AbstractPupilFunction(object):
         else:
             transform = fftshift(fft2(shift_test))
 
-        return np.abs(np.log10(1. + transform))**2.
+        transform *= np.conj(transform)
+
+        return np.abs(np.log10(1. + np.sqrt(transform)))**2.
 
     def pFunc(self, x, y):
         '''

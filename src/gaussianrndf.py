@@ -23,8 +23,16 @@ class GaussianRandomField(object):
     def randomfield(self, pk):
         noise = fft2(np.random.normal(size=(self.samples, self.samples)))
 
-        pks = np.conj(pk)
+        datapk  = None
 
-        amplitude = np.sqrt(pks * pk)
+        if callable(pk):
+            # If the passed 'pk' is a function, use the builtin mesh to compute the power spectrum
+            datapk = pk(self.KX, self.KY)
+        else:
+            # Assuming the number crunching has already been done
+            datapk = pk
+
+        datapks   = np.conj(datapk)
+        amplitude = np.sqrt(datapks * datapk)
 
         return fftshift(ifft2(noise * amplitude))

@@ -79,9 +79,48 @@ def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True):
     k: Wavenumber of light (2π / λ)
     '''
     # PSF
-    psf = pupilFunc.psf(filtering=filtering, noshift=noshift)  # Generate PSF
+    psf = pupilFunc.psf(k=k, filtering=filtering, noshift=noshift)  # Generate PSF
     psf = psf / np.amax(psf)                                   # Rescale output so max value is 1. (luminance)
     psf = np.where(psf > 1e-15, psf, 0.)                       # Filter very low values
+
+    # Relevant k's
+    spacing = 1. / (2. * pupilFunc.nyqfreq())                  # Spacing from Nyquist frequency
+    k       = fftshift(fftfreq(pupilFunc.samples, d=spacing))  # The actual k's
+    k_map   = [k[0], k[-1], k[-1], k[0]]                       # Because imshow is oriented top-left, remap k extrema
+
+    # Draw
+    fig, ax = plt.subplots()
+
+    if color is not None:
+        ax.imshow(psf, cmap=plt.get_cmap(color), extent=k_map)
+    else:
+        ax.imshow(psf, extent=k_map)
+
+    ax.set_aspect('equal')
+    ax.set_xlabel('$k_x$ ($m^{-1}$)')
+    ax.set_ylabel('$k_y$ ($m^{-1}$)')
+
+def render_psf_range(pupilFunc, k, color=None, noshift=False, filtering=True):
+    '''
+    pupilFunc: The complex Pupil Function to analyze
+    k: Wavenumber of light (2π / λ)
+    '''
+
+    # PSF
+    psf = None
+
+    for kval in k:
+        if psf is None:
+            psf = pupilFunc.psf(k=kval, filtering=filtering, noshift=noshift) # Generate PSF
+            psf = psf / np.amax(psf)                                          # Rescale output so max value is 1. (luminance)
+            psf = np.where(psf > 1e-15, psf, 0.)                              # Filter very low values
+        else:
+            s   = pupilFunc.psf(k=kval, filtering=filtering, noshift=noshift) # Generate PSF
+            s   = s / np.amax(s)
+            s   = np.where(psf > 1e-15, psf, 0.)
+            psf += s
+
+    psf = psf / np.amax(psf)
 
     # Relevant k's
     spacing = 1. / (2. * pupilFunc.nyqfreq())                  # Spacing from Nyquist frequency
@@ -115,10 +154,7 @@ def plot_gsimplepupil():
     render_pupil(dirty, k=k_green, color='gray')
 
 def plot_modelpupil():
-    render_pupil(model, k=k_blue, color='gray')
-
-def plot_modelpupil2():
-    render_pupil(model, k=k_red, color='magma')
+    render_pupil(model, k=k_green, color='gray')
 
 # PSFs
 def plot_simplepsf():
@@ -136,16 +172,37 @@ def plot_gcassepsf():
 def plot_squarepsf():
     render_psf(square)
 
-def plot_modelpsf():
+def plot_modelpsfr():
+    render_psf(model, color='magma', k=k_red)
+
+def plot_modelpsfg():
+    render_psf(model, color='magma', k=k_green)
+
+def plot_modelpsfb():
     render_psf(model, color='magma', k=k_blue)
+
+def plot_modelpsfcomp():
+    render_psf_range(model, [k_red, k_green, k_blue], color='magma')
 
 # Misc
 def plot_gauss():
     # check the random field is working
-    pk = model.atm_Pk(gauss.KX, gauss.KY)
+    field = gauss.randomfield(test_power_spec)
+    field = field / np.amax(field)
+
     plt.figure()
-    plt.imshow(np.sqrt(gauss.randomfield(pk).real**2 + gauss.randomfield(pk).imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
     plt.ylabel('$m^{\\alpha}$')
     plt.title('Gaussian Random Field')
 # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
+
+def test_power_spec(kx, ky):
+    k = np.sqrt(kx**2. + ky**2.)
+
+    ret = np.zeros((N_samples, N_samples))
+    ret = np.where(k > 1e-15, k**(-2.), 1)
+
+    ret = TWO_PI*(ret / np.amax(ret))
+
+    return ret

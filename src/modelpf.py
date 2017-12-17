@@ -35,11 +35,12 @@ class ModelPupilFunction(AbstractPupilFunction):
         # We want to preserve the same field for a single instance to simulate
         # a particular mirror. Also good for consistent and comparable images
         if not hasattr(self, 'renderedField'):
-            self.renderedField = self.gaussfield.randomfield(self.atm_Pk(self.gaussfield.KX, self.gaussfield.KY))
+            self.renderedField = self.gaussfield.randomfield(ModelPupilFunction.atm_Pk(self.gaussfield.KX, self.gaussfield.KY))
 
         return self.renderedField
  
-    def atm_Pk(self, kx, ky):
+    @staticmethod
+    def atm_Pk(kx, ky):
         '''
         Models atmospheric turbulence according to Von Karman spectrum
 
@@ -49,18 +50,18 @@ class ModelPupilFunction(AbstractPupilFunction):
         l_max = 1e2   # meters
         r0    = 20e-2 # meters
 
-        k_max = 5.92 / l_min
-        k_min = TWO_PI / l_max
+        k_M = np.sqrt(5.92 / l_min)
+        k_0 = TWO_PI / l_max
 
         k2 = kx**2. + ky**2.
 
-        k2 = np.where(k2 < k_min**2, 0., k2)
-        k2 = np.where(k2 > k_max**2, 0., k2)
+        # k2 = np.where(k2 < k_0**2, 0., k2)
+        # k2 = np.where(k2 > k_M**2, 0., k2)
 
         a  = 0.023
 
-        num = (np.abs(k2 + k_min**2))**(-11./6.)
+        num = (np.abs(k2 + k_0**2))**(-11./6.)
         dem = r0**(5./3.)
-        expfac = np.exp(-1. * (k2 / k_max**2))
+        expfac = np.exp(-1. * (k2 / k_M**2))
 
         return a * (num / dem) * expfac
