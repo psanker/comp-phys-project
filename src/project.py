@@ -18,7 +18,11 @@ from .modelpf import ModelPupilFunction
 PI     = np.pi
 TWO_PI = 2. * PI
 ps     = 2.  # padding scale factor
-N_samples = 256
+N_samples = 2048
+
+k_blue  = TWO_PI / (400e-9)
+k_red   = TWO_PI / (700e-9)
+k_green = TWO_PI / (550e-9)
 
 # DIAMETERS ARE IN METERS
 pupil  = SimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
@@ -52,15 +56,18 @@ def render_pupil(pupilFunc, k=TWO_PI, color=None, filtering=True):
     pupilFunc: The complex Pupil Function to analyze
     k: Wavenumber of light (2π / λ)
     '''
-    s     = pupilFunc.padscale * pupilFunc.diameter  # Scaling based on padding and diameter
-    s_map = [-s, s, s, -s]                           # Because imshow is oriented top-left, remap s extrema
+    s     = pupilFunc.padscale * pupilFunc.diameter   # Scaling based on padding and diameter
+    s_map = [-s, s, s, -s]                            # Because imshow is oriented top-left, remap s extrema
 
     fig, ax = plt.subplots()
 
+    render = pupilFunc.render(k, filtering=filtering) # Raw render information, after applying Gaussian filter
+    amp2   = render.real**2 + render.imag**2          # Purely amplitude information for image output
+
     if color is not None:
-        ax.imshow(pupilFunc.render(k, filtering=filtering).real, cmap=plt.get_cmap(color), extent=s_map)
+        ax.imshow(np.sqrt(amp2), cmap=plt.get_cmap(color), extent=s_map)
     else:
-        ax.imshow(pupilFunc.render(k, filtering=filtering).real, extent=s_map)
+        ax.imshow(np.sqrt(amp2), extent=s_map)
 
     ax.set_aspect('equal')
     ax.set_xlabel('$x$ ($m$)')
@@ -72,7 +79,7 @@ def render_psf(pupilFunc, k=TWO_PI, color=None, noshift=False, filtering=True):
     k: Wavenumber of light (2π / λ)
     '''
     # PSF
-    psf = pupilFunc.psf(filtering=filtering, noshift=noshift)       # Generate PSF
+    psf = pupilFunc.psf(filtering=filtering, noshift=noshift)  # Generate PSF
     psf = psf / np.amax(psf)                                   # Rescale output so max value is 1. (luminance)
     psf = np.where(psf > 1e-15, psf, 0.)                       # Filter very low values
 
@@ -105,10 +112,13 @@ def plot_squarepupil():
     render_pupil(square, color='gray')
 
 def plot_gsimplepupil():
-    render_pupil(dirty, k=TWO_PI / 600e-9, color='gray')
+    render_pupil(dirty, k=k_green, color='gray')
 
 def plot_modelpupil():
-    render_pupil(model, k=TWO_PI / 20e-2, color='gray')
+    render_pupil(model, k=k_blue, color='gray')
+
+def plot_modelpupil2():
+    render_pupil(model, k=k_red, color='magma')
 
 # PSFs
 def plot_simplepsf():
@@ -127,11 +137,11 @@ def plot_squarepsf():
     render_psf(square)
 
 def plot_modelpsf():
-    render_psf(model, color='magma')
+    render_psf(model, color='magma', k=k_blue)
 
 # Misc
 def plot_gauss():
-# check the random field is working
+    # check the random field is working
     plt.figure()
     plt.imshow(np.sqrt(gauss.randomfield().real**2 + gauss.randomfield().imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
