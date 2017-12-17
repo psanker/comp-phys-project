@@ -24,9 +24,6 @@ class GaussianRandomField(object):
         a = np.arange(0, n//2)
         b = np.arange(1, n//2+1)
 
-        print(len(a))
-        print(len(b))
-        
         b = [-i for i in b[::-1]]
         return a + b
 
@@ -63,12 +60,12 @@ class GaussianRandomField(object):
     def randomfield(self):
         noise = fft2(np.random.normal(size=(self.samples, self.samples)))
 
-        pk  = self.kolmogorov_Pk(self.KX, self.KY)
+        pk  = self.Pk(self.KX, self.KY)
         pks = np.conj(pk)
 
         amplitude = np.sqrt(pks * pk)
         
-        return fftshift(ifft2(noise * amplitude))
+        return fftshift(ifft2(amplitude))
 
     def randomfield2(self):
         noise = fft2(np.random.normal(size=(self.samples, self.samples)))
@@ -79,4 +76,4 @@ class GaussianRandomField(object):
                 amplitude[i, j] = self.Pk(kx, ky)
                 amplitude[i, j] = np.sqrt(np.conj(amplitude[i, j]) * amplitude[i, j])
 
-        return ifft2(noise * amplitude)
+        return fftshift(ifft2(noise))
