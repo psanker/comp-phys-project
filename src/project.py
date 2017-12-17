@@ -24,7 +24,7 @@ k_blue  = TWO_PI / (400e-9)
 k_red   = TWO_PI / (700e-9)
 k_green = TWO_PI / (550e-9)
 
-diameter = 2.5
+diameter = 6.5
 
 # DIAMETERS ARE IN METERS
 pupil  = SimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
