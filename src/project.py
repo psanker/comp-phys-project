@@ -140,7 +140,7 @@ def plot_modelpsf():
     render_psf(model, color='magma', k=k_blue)
 
 # Misc
-def plot_gauss():
+def plot_gauss ():
     # check the random field is working
     pk = model.atm_Pk(gauss.KX, gauss.KY)
     plt.figure()
