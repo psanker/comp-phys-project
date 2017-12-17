@@ -24,12 +24,14 @@ k_blue  = TWO_PI / (400e-9)
 k_red   = TWO_PI / (700e-9)
 k_green = TWO_PI / (550e-9)
 
+diameter = 6.5
+
 # DIAMETERS ARE IN METERS
-pupil  = SimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
-dirty  = DirtySimplePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
-caspup = CassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
-dcaspf = DirtyCassegrainPupilFunction(diameter=6.5, b=1.5, samples=N_samples, padscale=ps)
-square = SquarePupilFunction(diameter=6.5, samples=N_samples, padscale=ps)
+pupil  = SimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
+dirty  = DirtySimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
+caspup = CassegrainPupilFunction(diameter=diameter, b=1.5, samples=N_samples, padscale=ps)
+dcaspf = DirtyCassegrainPupilFunction(diameter=diameter, b=1.5, samples=N_samples, padscale=ps)
+square = SquarePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
 model  = ModelPupilFunction(diameter=.250, b=.110, samples=N_samples, padscale=ps)
 gauss  = GaussianRandomField(pupil)
 
