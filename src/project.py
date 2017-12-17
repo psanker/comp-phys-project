@@ -208,7 +208,8 @@ def plot_gauss():
     k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map)
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(np.sqrt(field.real**2 + field.imag**2)), vmax=np.amax(np.sqrt(field.real**2 + field.imag**2)))
+    plt.colorbar()
     plt.xlabel('$m^{-1}$')
     plt.ylabel('$m^{-1}$')
     plt.title('Gaussian Random Field ($k^{%d}$)' % (alpha))
@@ -225,7 +226,8 @@ def plot_gaussatm():
     k_map   = [k[0], k[-1], k[-1], k[0]]                   # Because imshow is oriented top-left, remap k extrema
 
     plt.figure()
-    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map)
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'), extent=k_map, vmin=np.amin(np.sqrt(field.real**2 + field.imag**2)), vmax=np.amax(np.sqrt(field.real**2 + field.imag**2)))
+    plt.colorbar()
     plt.xlabel('$m^{-1}$')
     plt.ylabel('$m^{-1}$')
     plt.title('Amplitude of von Karman Turbulence')
