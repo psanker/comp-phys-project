@@ -187,6 +187,18 @@ def plot_modelpsfcomp():
 # Misc
 def plot_gauss ():
     # check the random field is working
+    alpha = -2.
+
+    def test_power_spec(kx, ky):
+        k = np.sqrt(kx**2. + ky**2.)
+
+        ret = np.zeros((N_samples, N_samples))
+        ret = np.where(k > 1e-15, k**(alpha), 1)
+
+        ret = TWO_PI*(ret / np.amax(ret))
+
+        return ret
+
     field = gauss.randomfield(test_power_spec)
     field = field / np.amax(field)
 
@@ -194,14 +206,25 @@ def plot_gauss ():
     plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
     plt.xlabel('$m^{\\alpha}$')
     plt.ylabel('$m^{\\alpha}$')
-    plt.title('Gaussian Random Field')
+    plt.title('Gaussian Random Field ($\\alpha=%d$)' % (alpha))
 # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
 
-def test_power_spec(kx, ky):
+def plot_gaussatm():
+    # check the random field is working
+    field = gauss.randomfield(ModelPupilFunction.atm_Pk)
+    field = field / np.amax(field)
+
+    plt.figure()
+    plt.imshow(np.sqrt(field.real**2 + field.imag**2), interpolation='none', cmap=plt.get_cmap('bone'))
+    plt.xlabel('$m^{\\alpha}$')
+    plt.ylabel('$m^{\\alpha}$')
+    plt.title('Gaussian Random Field')
+
+def test_power_spec(kx, ky, power=-2.):
     k = np.sqrt(kx**2. + ky**2.)
 
     ret = np.zeros((N_samples, N_samples))
-    ret = np.where(k > 1e-15, k**(-2.), 1)
+    ret = np.where(k > 1e-15, k**(power), 1)
 
     ret = TWO_PI*(ret / np.amax(ret))
 

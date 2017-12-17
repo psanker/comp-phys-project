@@ -46,8 +46,8 @@ class ModelPupilFunction(AbstractPupilFunction):
 
         http://community.dur.ac.uk/james.osborn/thesis/thesisse3.html
         '''
-        l_min = 1e-3  # meters
-        l_max = 1e2   # meters
+        l_min = 10e-3  # meters
+        l_max = 20.   # meters
         r0    = 20e-2 # meters
 
         k_M = np.sqrt(5.92 / l_min)
