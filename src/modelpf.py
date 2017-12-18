@@ -27,7 +27,7 @@ class ModelPupilFunction(AbstractPupilFunction):
         return pass4
 
     def wFunc(self, x, y):
-        if self.opts['turbulence'] is False:
+        if self.hasOption('turbulence') and self.opts['turbulence'] is False:
             return np.zeros((self.samples, self.samples))
         else:
             # Init the field

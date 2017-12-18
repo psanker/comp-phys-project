@@ -63,6 +63,13 @@ class AbstractPupilFunction(object):
         else:
             self.opts[k] = v
 
+    def hasOption(self, key):
+        for k in self.opts:
+            if k == key:
+                return True
+
+        return False
+
     def configurationMesh(self):
         '''
         For FFT padding, the image is defined from [-sD, sD] on both x & y domains
