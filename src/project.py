@@ -209,7 +209,7 @@ def plot_gauss():
 
         return ret
 
-    field = gauss.randomfield(ModelPupilFunction.atm_Pk)
+    field = gauss.randomfield(test_power_spec)
     field = np.sqrt(field.real**2. + field.imag**2.)
     field = field / np.amax(field)
 
