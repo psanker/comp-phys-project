@@ -188,7 +188,7 @@ def plot_squarepsf():
     render_psf(square)
 
 def plot_modeltpsf():
-    render_psf(model_turb, k=k_green, color='magma')
+    render_psf(model_turb, k=k_green, color='magma', limited=False)
 
 def plot_modelpsfr():
     render_psf(model, color='magma', k=k_red, limited=False)
