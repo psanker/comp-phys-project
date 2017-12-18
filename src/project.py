@@ -172,8 +172,8 @@ def plot_modeltpupil():
 def plot_simplepsf():
     render_psf(pupil, color='magma')
 
-def plot_simplepsfr():
-    render_psf(pupil, k=k_red, color='magma', limited=False)
+def plot_simplepsfg():
+    render_psf(pupil, k=k_green, color='magma', limited=False)
 
 def plot_gsimplepsf():
     render_psf(dirty, color='magma')
