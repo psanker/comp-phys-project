@@ -202,6 +202,9 @@ def plot_modelpsfb():
 def plot_modelpsfcomp():
     render_psf_range(model, [k_red, k_green, k_blue], color='magma')
 
+def plot_modeltpsfcomp():
+    render_psf_range(model_turb, TWO_PI / np.linspace(400e-9, 700e-9, 50), color='magma')
+
 # Misc
 def plot_gauss():
     # check the random field is working
