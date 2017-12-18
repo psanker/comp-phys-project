@@ -124,7 +124,7 @@ def render_psf_range(pupilFunc, k, color=None, noshift=False, filtering=True):
         else:
             s   = pupilFunc.psf(k=kval, filtering=filtering, noshift=noshift) # Generate PSF
             s   = s / np.amax(s)
-            s   = np.where(psf > 1e-15, psf, 0.)
+            s   = np.where(s > 1e-15, s, 0.)
             psf += s
 
     psf = psf / np.amax(psf)
@@ -180,13 +180,13 @@ def plot_squarepsf():
     render_psf(square)
 
 def plot_modelpsfr():
-    render_psf(model, color='magma', k=k_red)
+    render_psf(model, color='magma', k=k_red, limited=False)
 
 def plot_modelpsfg():
-    render_psf(model, color='magma', k=k_green)
+    render_psf(model, color='magma', k=k_green, limited=False)
 
 def plot_modelpsfb():
-    render_psf(model, color='magma', k=k_blue)
+    render_psf(model, color='magma', k=k_blue, limited=False)
 
 def plot_modelpsfcomp():
     render_psf_range(model, [k_red, k_green, k_blue], color='magma')
