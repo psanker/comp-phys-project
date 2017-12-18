@@ -28,12 +28,14 @@ diameter = 6.5
 
 # DIAMETERS ARE IN METERS
 pupil  = SimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
-dirty  = DirtySimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
+dirty  = DirtySimplePupilFunction(diameter=diameter, samples=N_samples, padscale=ps, pk=ModelPupilFunction.atm_Pk)
 caspup = CassegrainPupilFunction(diameter=diameter, b=1.5, samples=N_samples, padscale=ps)
 dcaspf = DirtyCassegrainPupilFunction(diameter=diameter, b=1.5, samples=N_samples, padscale=ps)
 square = SquarePupilFunction(diameter=diameter, samples=N_samples, padscale=ps)
 model  = ModelPupilFunction(diameter=.250, b=.110, samples=N_samples, padscale=ps)
-gauss  = GaussianRandomField(pupil)
+
+model_turb  = ModelPupilFunction(diameter=.250, b=.110, samples=N_samples, padscale=ps, turbulence=False)
+gauss       = GaussianRandomField(pupil)
 
 #### Memory management ####
 def terminate():
@@ -163,6 +165,9 @@ def plot_gsimplepupil():
 def plot_modelpupil():
     render_pupil(model, k=k_green, color='gray')
 
+def plot_modeltpupil():
+    render_pupil(model_turb, k=k_green, color='gray')
+
 # PSFs
 def plot_simplepsf():
     render_psf(pupil, color='magma')
@@ -181,6 +186,9 @@ def plot_gcassepsf():
 
 def plot_squarepsf():
     render_psf(square)
+
+def plot_modeltpsf():
+    render_psf(model_turb, k=k_green, color='magma')
 
 def plot_modelpsfr():
     render_psf(model, color='magma', k=k_red, limited=False)

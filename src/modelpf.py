@@ -27,17 +27,20 @@ class ModelPupilFunction(AbstractPupilFunction):
         return pass4
 
     def wFunc(self, x, y):
-        # Init the field
-        if not hasattr(self, 'gaussfield'):
-            self.gaussfield = GaussianRandomField(self)
+        if self.opts['turbulence'] is False:
+            return np.zeros((self.samples, self.samples))
+        else:
+            # Init the field
+            if not hasattr(self, 'gaussfield'):
+                self.gaussfield = GaussianRandomField(self)
 
-        # In case the generated field is not rendered
-        # We want to preserve the same field for a single instance to simulate
-        # a particular mirror. Also good for consistent and comparable images
-        if not hasattr(self, 'renderedField'):
-            self.renderedField = self.gaussfield.randomfield(ModelPupilFunction.atm_Pk(self.gaussfield.KX, self.gaussfield.KY))
+            # In case the generated field is not rendered
+            # We want to preserve the same field for a single instance to simulate
+            # a particular mirror. Also good for consistent and comparable images
+            if not hasattr(self, 'renderedField'):
+                self.renderedField = self.gaussfield.randomfield(ModelPupilFunction.atm_Pk(self.gaussfield.KX, self.gaussfield.KY))
 
-        return self.renderedField
+            return self.renderedField
  
     @staticmethod
     def atm_Pk(kx, ky):
