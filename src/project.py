@@ -205,7 +205,7 @@ def plot_modelpsfcomp():
 # Misc
 def plot_gauss():
     # check the random field is working
-    alpha = -2.
+    alpha = -.0001
 
     def test_power_spec(kx, ky):
         k = np.sqrt(kx**2. + ky**2.)
@@ -231,7 +231,7 @@ def plot_gauss():
     plt.colorbar()
     plt.xlabel('$m^{-1}$')
     plt.ylabel('$m^{-1}$')
-    plt.title('Gaussian Random Field ($k^{%d}$)' % (alpha))
+    plt.title('Gaussian Random Field ($k^{%1.4f}$)' % (alpha))
 # It do, but the divide by zero is weird. Even filtered out the 0 vals in the lambda exp
 
 def plot_gaussatm():
